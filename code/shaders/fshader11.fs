@@ -90,7 +90,8 @@ bool rayintersection(vec3 position, vec3 dir)
         texit = tzmax;
     }
 
-    if(tentry > 0 && texit > 0 && tentry < texit){
+    if(texit > 0 && tentry < texit){
+        tentry = tentry < 0 ? 0 : tentry;
         return true;
     }
     return false;
@@ -114,7 +115,6 @@ void main()
     int i = 0;
     float t = tentry;
     curren_pos = position + t*direction;
-    float tnorm = (tentry-tmin)/(tmax-tmin);
     for(i=0;;i+=1){
         value = texture(texture3d, (curren_pos+((ExtentMax - ExtentMin)/2))/(ExtentMax-ExtentMin));
         sum += value.r;

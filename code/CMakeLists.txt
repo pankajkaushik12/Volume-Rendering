@@ -13,6 +13,8 @@ set(glfw $ENV{GLFW_DIR})
 set(SOURCES
 	"src/main.cpp"
 	"src/utils.cpp"
+	"src/volumeReader.cpp"
+	"src/application.cpp"
 	"depends/imgui/imgui_impl_glfw.cpp"
 	"depends/imgui/imgui_impl_opengl3.cpp"
 	"depends/imgui/imgui.cpp"
@@ -22,6 +24,7 @@ set(SOURCES
 	)
 
 include_directories(
+	headers/
 	${glew}/include
 	${glfw}/include
 	$ENV{GLM_DIR}
