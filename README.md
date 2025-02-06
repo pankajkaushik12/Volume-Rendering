@@ -26,7 +26,7 @@ This project demonstrates volume rendering using OpenGL and C++. The goal is to 
 4. Use the CMake to build and generate the solution. Open the generated solution in Microsoft Visual Studio.
 4. Run the project
     ```bash
-    VolumeRendering.exe -volumePath *volume-to-volume*
+    VolumeRendering.exe -volumePath *path-to-volume*
 
 ## Controls:
 - Left-click and drag to rotate the volume.
