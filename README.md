@@ -40,3 +40,8 @@ The 1D transfer function is used to map voxel intensities to color and opacity v
 - Click the cross button to delete a selected control point.
 - Drag the position slider to adjust the intensity corresponding to the control point.
 
+## Output
+
+![](/images/2.png)
+
+![](/images/1.png)
