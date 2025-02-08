@@ -24,8 +24,8 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-#define WIDTH 1080
-#define HEIGHT 720
+#define WIDTH 1920
+#define HEIGHT 1080
 #define WINDOWNAME "Volume Rendering"
 
 struct TransferFunctionPoint {
@@ -137,8 +137,6 @@ struct GLFCameraWindow : public GLFWindow {
 	// Virtual function to handle keyboard input
 	virtual void key(int key, int action, int mods) override
 	{
-		if (!RightButtonPressed) return;
-
 		float velocity = speed * deltaTime;
 
 		switch (key) {

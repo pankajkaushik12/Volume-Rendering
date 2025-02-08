@@ -111,28 +111,25 @@ void main()
     }
 
     dst = vec4(0,0,0,0);
-    float sum = 0;
     int i = 0;
     float t = tentry;
     curren_pos = position + t*direction;
     for(i=0;;i+=1){
         value = texture(texture3d, (curren_pos+((ExtentMax - ExtentMin)/2))/(ExtentMax-ExtentMin));
-        sum += value.r;
         scalar = value.r;
         vec4 src = texture(transferfun,scalar);
 
         dst.rgb = dst.rgb + (1.0 - dst.a)*src.rgb*scalar;
-        dst.a = dst.a + (1.0 - dst.a)*scalar;
+        dst.a = dst.a + (1.0 - dst.a)*src.a*scalar;
 
         t += stepSize;
         curren_pos = position + direction*t;
         if(t>texit){
-                break;
+            return;
         }
         if(dst.a > 0.95){
-                break;
+            break;
         }
     }
-    sum /=i;
     outColor = dst;
 }
