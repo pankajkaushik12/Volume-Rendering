@@ -42,6 +42,8 @@ The 1D transfer function is used to map voxel intensities to color and opacity v
 
 ## Output
 
+![](/images/3.png)
+
 ![](/images/2.png)
 
 ![](/images/1.png)
