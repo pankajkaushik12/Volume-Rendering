@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 
@@ -68,6 +69,13 @@ private:
 		{0.0f, ImVec4(0, 0, 0, 0)},
 		{1.0f, ImVec4(1, 1, 1, 1)}
 	};
+
+	char TfFileName[256] = "";
+	std::string tfFolderPath = "../TransferFunctions/";
+	bool showTFSelector = false;
+	bool SaveTransferFunction(std::string fileName);
+	bool LoadTransferFunction(std::string fileName);
+	void ShowTransferFunctionSelector();
 
 public:
 	GLFWindow(int width = WIDTH, int height = HEIGHT, std::string name = WINDOWNAME);

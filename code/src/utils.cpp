@@ -1,4 +1,7 @@
 #include "utils.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -375,10 +378,69 @@ void GLFWindow::DrawTransferFunctionEditor() {
             HasTransferFunctionModified = true;
         }
     }
+    if (selectedControlPoint == 0 || selectedControlPoint == controlPoints.size() - 1) {
+        ImGui::Separator();
+    }
 
     if (HasTransferFunctionModified) { Create1DTransferFunction(); }
 
+    ImGui::InputText("Enter the Transferfunction filename", TfFileName, sizeof(TfFileName));
+    if (ImGui::Button("Save Transfer Function")) {
+        if (TfFileName[0] != '\0')
+        {
+            std::string fullPath = "../TransferFunctions/" + std::string(TfFileName) + ".dat";
+            SaveTransferFunction(fullPath);
+        }
+        else {
+            std::cout << "Please enter a valid filename!" << std::endl;
+        }
+    }
+
+    if (ImGui::Button("Load Transfer Function")) {
+        showTFSelector = !showTFSelector;
+    }
+    if (showTFSelector) {
+        ShowTransferFunctionSelector();
+    }
     ImGui::End();
+}
+
+void GLFWindow::ShowTransferFunctionSelector() {
+    // Scan folder for .dat files
+    std::vector<std::string> tfFiles;
+    for (const auto& entry : fs::directory_iterator(tfFolderPath)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".dat") {
+            tfFiles.push_back(entry.path().filename().string());
+        }
+    }
+
+    if (tfFiles.empty()) {
+        ImGui::Text("No transfer function files found.");
+        return;
+    }
+
+    static int selectedFileIndex = -1;
+
+    if (ImGui::BeginCombo("Transfer Functions", selectedFileIndex == -1 ? "Select a file..." : tfFiles[selectedFileIndex].c_str())) {
+        for (int i = 0; i < tfFiles.size(); ++i) {
+            bool isSelected = (selectedFileIndex == i);
+            if (ImGui::Selectable(tfFiles[i].c_str(), isSelected)) {
+                selectedFileIndex = i;
+            }
+            if (isSelected) {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    // Load the selected transfer function
+    if (selectedFileIndex >= 0) {
+        std::string selectedFile = tfFolderPath + "/" + tfFiles[selectedFileIndex];
+        if (LoadTransferFunction(selectedFile)) {
+            Create1DTransferFunction();
+        }
+    }
 }
 
 void GLFWindow::SetUniforms()
@@ -650,6 +712,47 @@ bool GLFWindow::Run()
 
     lastFrameTime = currentFrameTime;
 
+    return true;
+}
+
+bool GLFWindow::SaveTransferFunction(std::string filename)
+{
+    std::ofstream ofs(filename, std::ios::binary);
+    if (!ofs) {
+        std::cerr << "Failed to open file for saving: " << filename << std::endl;
+        return false;
+    }
+
+    size_t size = controlPoints.size();
+    ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+
+    for (const auto& point : controlPoints) {
+        ofs.write(reinterpret_cast<const char*>(&point.position), sizeof(point.position));
+        ofs.write(reinterpret_cast<const char*>(&point.color), sizeof(point.color));
+    }
+
+    ofs.close();
+    return true;
+}
+
+bool GLFWindow::LoadTransferFunction(std::string filename)
+{
+    std::ifstream ifs(filename, std::ios::binary);
+    if (!ifs) {
+        std::cerr << "Failed to open file for loading: " << filename << std::endl;
+        return false;
+    }
+
+    size_t size = 0;
+    ifs.read(reinterpret_cast<char*>(&size), sizeof(size));  // Read the size of the array
+
+    controlPoints.resize(size);  // Resize the vector to hold the data
+    for (auto& point : controlPoints) {
+        ifs.read(reinterpret_cast<char*>(&point.position), sizeof(point.position));  // Read position
+        ifs.read(reinterpret_cast<char*>(&point.color), sizeof(point.color));        // Read color
+    }
+
+    ifs.close();
     return true;
 }
 
